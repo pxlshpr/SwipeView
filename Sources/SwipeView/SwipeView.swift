@@ -15,7 +15,7 @@ public struct SwipeView<Content: View>: View {
 
     var content: () -> Content
     
-    init(spacingBetweenContentAndDeleteButton: CGFloat = 0, content: @escaping () -> Content) {
+    public init(spacingBetweenContentAndDeleteButton: CGFloat = 0, content: @escaping () -> Content) {
         self.content = content
         _spacingBetweenContentAndDeleteButton = State(initialValue: spacingBetweenContentAndDeleteButton)
     }
