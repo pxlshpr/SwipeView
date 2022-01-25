@@ -2,22 +2,17 @@ import SwiftUI
 import SwiftHaptics
 
 extension Notification.Name {
-    static var mealDragBegan: Notification.Name { return .init("mealDragBegan") }
+    static var dragBegan: Notification.Name { return .init("dragBegan") }
 }
 
 public struct SwipeView<Content: View>: View {
     
-    let mealDragBegan = NotificationCenter.default.publisher(for: .mealDragBegan)
+    let dragBegan = NotificationCenter.default.publisher(for: .dragBegan)
     
-    //TODO: Make this an optional parameter
-//    @State var spacingBetweenContentAndDeleteButton: CGFloat = 16
-    @State var spacingBetweenContentAndDeleteButton: CGFloat
-
     var content: () -> Content
     
-    public init(spacingBetweenContentAndDeleteButton: CGFloat = 0, content: @escaping () -> Content) {
+    public init(content: @escaping () -> Content) {
         self.content = content
-        _spacingBetweenContentAndDeleteButton = State(initialValue: spacingBetweenContentAndDeleteButton)
     }
 
     public var body: some View {
@@ -35,7 +30,7 @@ public struct SwipeView<Content: View>: View {
                 .frame(width: deleteWidth)
                 .frame(maxHeight: .infinity)
                 .background(Color.red)
-                .offset(x: width/2.0 + (deleteWidth/2.0) + spacingBetweenContentAndDeleteButton)
+                .offset(x: width/2.0 + (deleteWidth/2.0))
                 .offset(x: offset)
         }
         .simultaneousGesture(dragGesture)
@@ -48,7 +43,7 @@ public struct SwipeView<Content: View>: View {
         .onPreferenceChange(WidthPreferenceKey.self) {
             width = $0
         }
-        .onReceive(mealDragBegan, perform: mealDragBegan)
+        .onReceive(dragBegan, perform: dragBegan)
     }
     
     var deleteButton: some View {
@@ -84,7 +79,7 @@ public struct SwipeView<Content: View>: View {
         
         DispatchQueue.main.async {
             isDragging = true
-            NotificationCenter.default.post(name: .mealDragBegan, object: nil)
+            NotificationCenter.default.post(name: .dragBegan, object: nil)
 
             let belowMaximumPoint = -offset <= deleteDragMaximumPoint
             withAnimation(.interactiveSpring()) {
@@ -183,7 +178,7 @@ public struct SwipeView<Content: View>: View {
 //        return 100
     }
     
-    private func mealDragBegan(notification: Notification) {
+    private func dragBegan(notification: Notification) {
         if !isDragging && offset != 0 {
             DispatchQueue.main.async {
                 resetOffset()
